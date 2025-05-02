@@ -1,0 +1,94 @@
+# Global SFTP configuration
+sftp:
+  # Global default local download directory.
+  # Effective download path for a server will be: <localDownloadDir>/<serverName>
+  localDownloadDir: /data/sftp/download
+
+  # Global default poller configuration.
+  defaultPoller:
+    type: fixed                # "fixed" polling by default.
+    fixedInterval: 3500        # Poll every 3500 ms.
+    startTime: "09:00"         # (For timeWindow type – not used here.)
+    endTime: "17:00"
+    windowInterval: 10000
+    timeZone: "UTC"
+    fallbackFixedDelay: 3000
+
+  # Global default retry configuration.
+  # These settings are used if no server override is provided.
+  defaultRetry:
+    maxAttempts: 3             # Total of 3 attempts (1 initial + 2 retries).
+    initialInterval: 1500      # 1500 ms initial wait.
+    multiplier: 2.0            # Each subsequent interval is 2x the previous.
+    maxInterval: 5000          # Maximum retry interval is 5000 ms.
+
+  # List of individual SFTP server configurations.
+  servers:
+    # ----------------------------------------------------------------------
+    # Server 1: Uses all global defaults.
+    # Effective download directory: /data/sftp/download/server1
+    # Error messages will be sent to the global error channel ("globalErrorChannel").
+    - name: server1
+      host: sftp.server1.example.com
+      port: 22
+      username: user1
+      password: pass1
+      from: /remote/download/server1        # Download directory.
+      to: /remote/upload/server1            # Upload directory.
+      # No archive directory defined.
+      # No local poller, retry, or error channel override.
+
+    # ----------------------------------------------------------------------
+    # Server 2: Overrides local download directory and uses a time window poller.
+    # Sends error messages to a local error channel named "sftpErrorChannel-server2".
+    - name: server2
+      host: sftp.server2.example.com
+      port: 2222                           # Custom port.
+      username: user2
+      password: pass2
+      from: /remote/download/server2
+      to: /remote/upload/server2
+      archive: /remote/archive/server2       # Archive directory defined.
+      localDownloadDir: /custom/download/server2
+      localErrorChannel: sftpErrorChannel-server2  # Local error channel override.
+      poller:
+        type: timeWindow                   # Use time window polling.
+        startTime: "08:00"                 # Active between 08:00 and 16:00.
+        endTime: "16:00"
+        windowInterval: 8000               # Poll every 8000 ms during active window.
+        timeZone: "America/New_York"
+        fallbackFixedDelay: 4000           # Fallback fixed delay override.
+      # Inherits global defaultRetry.
+
+    # ----------------------------------------------------------------------
+    # Server 3: Uses a fixed poller and overrides retry configuration.
+    # Sends error messages to the global error channel.
+    - name: server3
+      host: sftp.server3.example.com
+      username: user3
+      password: pass3
+      from: /remote/download/server3
+      to: /remote/upload/server3
+      poller:
+        type: fixed                        # Fixed polling.
+        fixedInterval: 4000                # Poll every 4000 ms.
+        fallbackFixedDelay: 3500
+      retry:
+        maxAttempts: 5                     # Increase attempts to 5.
+        initialInterval: 1000              # Start with 1000 ms.
+        multiplier: 1.5                    # Lower multiplier.
+        maxInterval: 4000
+      # Inherits global localDownloadDir (effective directory: /data/sftp/download/server3).
+      # No local error channel override → errors go to "globalErrorChannel".
+
+    # ----------------------------------------------------------------------
+    # Server 4: Minimal configuration – inherits all global defaults.
+    - name: server4
+      host: sftp.server4.example.com
+      username: user4
+      password: pass4
+      from: /remote/download/server4
+      to: /remote/upload/server4
+      # Inherits global localDownloadDir (effective: /data/sftp/download/server4)
+      # Inherits global poller and retry.
+      # Inherits global error channel ("globalErrorChannel").
