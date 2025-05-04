@@ -230,6 +230,35 @@ public class SftpProperties {
      * Optional override for the local upload directory.
      */
     private String localUploadDir;
+    /**
+     * Flag indicating whether a dynamic bridge should be created for uploads.
+     */
+    private Boolean dynamicUploadBridgeEnabled;
+
+    /**
+     * The name of the external inbound channel for uploads (e.g. "kafkaInboundChannel").
+     */
+    private String uploadSource;
+
+    /**
+     * Flag indicating whether a dynamic bridge should be created for downloads.
+     */
+    private Boolean dynamicDownloadBridgeEnabled;
+
+    /**
+     * The external target channel for downloads (e.g. "mqDownloadChannel").
+     */
+    private String downloadTarget;
+
+    /**
+     * Flag indicating whether a dynamic bridge should be created for archive operations.
+     */
+    private Boolean dynamicArchiveBridgeEnabled;
+
+    /**
+     * The external target channel for archives (e.g. "mqArchiveChannel").
+     */
+    private String archiveTarget;
   }
 
   /**
