@@ -1,0 +1,81 @@
+sftp:
+  # Global settings
+  localDownloadDir: "${java.io.tmpdir}/sftp/download"
+
+  defaultPoller:
+    type: fixed
+    fixedInterval: 5000
+    fallbackFixedDelay: 5000
+
+  defaultRetry:
+    maxAttempts: 3
+    initialInterval: 1500
+    multiplier: 2.0
+    maxInterval: 5000
+
+  throughput:
+    corePoolSize: 10
+    maxPoolSize: 20
+    queueCapacity: 100
+    threadNamePrefix: "SftpInbound-"
+
+  # Default port for all servers; you can override this with a system property.
+  port: 2222
+
+  servers:
+    # Server1: Standard download and archive operations.
+    - name: server1
+      host: localhost
+      username: user
+      password: password
+      port: ${sftp.port}
+      from: "remote/download1"
+      archive: "remote/archive1"
+
+    # Server2: Standard upload operations.
+    - name: server2
+      host: localhost
+      username: user
+      password: password
+      port: ${sftp.port}
+      to: "remote/upload2"
+
+    # Server3: Combined download, upload, and archive.
+    - name: server3
+      host: localhost
+      username: user
+      password: password
+      port: ${sftp.port}
+      from: "remote/download3"
+      to: "remote/upload3"
+      archive: "remote/archive3"
+
+#    # Server4: Dynamic Upload Bridge.
+#    - name: server4
+#      host: localhost
+#      username: user
+#      password: password
+#      port: ${sftp.port}
+#      to: "remote/upload4"
+#      dynamicUploadBridgeEnabled: true
+#      uploadSource: "kafkaInboundChannel"
+#
+#    # Server5: Dynamic Download Bridge.
+#    - name: server5
+#      host: localhost
+#      username: user
+#      password: password
+#      port: ${sftp.port}
+#      from: "remote/download5"
+#      dynamicDownloadBridgeEnabled: true
+#      downloadTarget: "mqDownloadChannel"
+#
+#    # Server6: Dynamic Archive Bridge.
+#    - name: server6
+#      host: localhost
+#      username: user
+#      password: password
+#      port: ${sftp.port}
+#      archive: "remote/archive6"
+#      dynamicArchiveBridgeEnabled: true
+#      archiveTarget: "mqArchiveChannel"
